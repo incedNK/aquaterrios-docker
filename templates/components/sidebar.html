@@ -1,0 +1,102 @@
+<div class="w-full bg-[#0b545c] md:h-full md:w-48 p-3">
+  <button
+    data-collapse-toggle="navbar-solid-bg"
+    type="button"
+    class="inline-flex items-center p-2 ml-3 text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200"
+    aria-controls="navbar-solid-bg"
+    aria-expanded="false"
+  >
+    <span class="sr-only">Open main menu</span>
+    <svg
+      class="w-6 h-6"
+      aria-hidden="true"
+      fill="currentColor"
+      viewBox="0 0 20 20"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        fill-rule="evenodd"
+        d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
+        clip-rule="evenodd"
+      ></path>
+    </svg>
+  </button>
+  <div class="hidden w-full md:block md:h-full" id="navbar-solid-bg">
+    <ul
+      id="user-nav"
+      data-tabs-toggle="#userContent"
+      class="flex flex-col mt-4 rounded-lg bg-[#0b545c] md:flex-col md:space-y-8 md:text-md text-white md:font-medium md:border-0"
+    >
+      <li>
+        <button
+          role="tab"
+          id="dashboard-tab"
+          data-tabs-target="#dashboard"
+          class="block py-2 pl-3 pr-4 rounded hover:text-[#0b545c] hover:bg-gray-100 md:py-0 md:bg-transparent md:border-0 md:hover:text-[#0b545c]"
+        >
+          <img
+            class="w-6 h-6 rounded-full inline-block mr-2"
+            src="/static/images/dashboard.jpg"
+            alt="dashboard image"
+          />Dashboard
+        </button>
+      </li>
+      <li>
+        <button
+          role="tab"
+          id="devices-tab"
+          data-tabs-target="#devices"
+          class="block py-2 pl-3 pr-4 rounded hover:text-[#0b545c] hover:bg-gray-100 md:py-0 md:bg-transparent md:border-0 md:hover:text-[#0b545c]"
+        >
+          <img
+            class="w-6 h-6 rounded-full inline-block mr-2"
+            src="/static/images/devices.png"
+            alt="devices image"
+          />Devices
+        </button>
+      </li>
+      <li>
+        <button
+          role="tab"
+          id="shifts-tab"
+          data-tabs-target="#shifts"
+          class="block py-2 pl-3 pr-4 rounded hover:text-[#0b545c] hover:bg-gray-100 md:py-0 md:bg-transparent md:border-0 md:hover:text-[#0b545c]"
+        >
+          <img
+            class="w-6 h-6 rounded-full inline-block mr-2"
+            src="/static/images/shifts.jpg"
+            alt="shifts image"
+          />Shifts
+        </button>
+      </li>
+      <li>
+        <button
+          role="tab"
+          id="schedule-tab"
+          data-tabs-target="#schedule"
+          class="block py-2 pl-3 pr-4 rounded hover:text-[#0b545c] hover:bg-gray-100 md:py-0 md:bg-transparent md:border-0 md:hover:text-[#0b545c]"
+        >
+          <img
+            class="w-6 h-6 rounded-full inline-block mr-2"
+            src="/static/images/shifts.jpg"
+            alt="shifts image"
+          />Schedules
+        </button>
+      </li>
+      <li>
+        <button
+          role="tab"
+          id="logs-tab"
+          data-tabs-target="#logs"
+          class="block py-2 pl-3 pr-4 rounded hover:text-[#0b545c] hover:bg-gray-100 md:py-0 md:bg-transparent md:border-0 md:hover:text-[#0b545c]"
+        >
+          <img
+            class="w-6 h-6 rounded-full inline-block mr-2"
+            src="/static/images/log.png"
+            alt="log image"
+          />Logs
+        </button>
+      </li>
+    </ul>
+  </div>
+</div>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Agritech Web App</title>
+        <meta name="description" content="Aquaterrios Web App">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/tw-elements/dist/css/index.min.css" />
+        <script src="https://cdn.tailwindcss.com/3.2.4"></script>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.3/flowbite.min.css" rel="stylesheet" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        {% block head %} {% endblock %}
+        <style>
+            {% block style %} {% endblock %}
+        </style>
+       
+    </head>
+    <body>
+    <div class="h-screen">
+        <div class="flex-cols md:h-4/5">
+       
+            <div class="flex-cols md:flex flex-row md:h-full">
+                {% block sidebar %} <div class="xs:w-full md:w-48 md:pr-1">  </div>{% endblock %}
+                
+                <div class="absolute top-0 right-0 md:h-14 "> {% block navbar %} {% endblock %} </div>
+   
+                <div class="mt-6 md:mt-14 md:w-full overflow-y-scroll">
+                    <div id="message" class="p-4 text-md text-amber-500 text-center rounded-lg" role="alert"></div>
+                     {% block content %} {% endblock %} </div>
+              
+            </div>
+      
+        </div>
+
+    
+        <footer class="text-xs p-1 bg-[#0b545c] md:p-2">
+        <div class="grid gap-1 place-items-center">
+            <div class="mb-1 sm:row-span-2">
+                <img class="h-32 w-48 rounded-lg" src="/static/images/agritech-logo.png", alt="Logo Image">
+            </div>
+            <div class="flex flex-col lg:flex-row lg:space-x-6">
+                <div class="flex flex-col md:flex-row md:space-x-12">
+                <div class="text-white pt-2 mb-2 w-52">
+                    <h2 class="mb-3 lg:text-sm font-semibold uppercase">Company</h2>
+                    <ul class="lg:text-sm mb-1">
+                        <li class="mb-1">
+                            <a href="#" class="hover:underline">About Us</a>
+                        </li>
+                        <li class="mb-1">
+                            <a href="#" class="hover:underline">Contact</a>
+                        </li>
+                        <li class="mb-1">
+                            <a href="#" class="hover:underline">Terms & Conditions</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="text-white pt-2 mb-2 w-52">
+                    <h2 class="mb-3 lg:text-sm font-semibold uppercase">Social Media</h2>
+                    <ul class="lg:text-sm mb-1">
+                        <li class="mb-1">
+                            <a href="#" class="hover:underline">
+                            <i class="fa fa-facebook"></i> Facebook</a>
+                        </li>
+                        <li class="mb-1">
+                            <a href="#" class="hover:underline">
+                            <i class="fa fa-twitter"></i> Twitter</a>
+                        </li>
+                        <li class="mb-1">
+                            <a href="#" class="hover:underline">
+                            <i class="fa fa-instagram"></i> Instagram</a>
+                        </li>
+                    </ul>
+                </div>
+                </div>
+                <div class="flex flex-col md:flex-row md:space-x-1">
+                <div class="text-white lg:text-sm pt-2 mb-2 w-64">
+                    <h2 class="mb-3 lg:text-sm font-semibold uppercase">Reach us</h2>
+                    <p class="lg:text-sm pb-1">Subscribe to our newsletter</p>
+                    <form id="subscribeForm" action="/subscribe">
+                        <input type="email" class="text-xs border-2 border-white rounded-l-lg bg-[#0b545c] lg:text-sm 
+                        text-white" name="mail" placeholder="Email Address">
+                        <button type="submit"  id="subscribeBtn" class="bg-slate-200 rounded-r-lg text-[#0b545c] h-9 sm:h-10 w-8 hover:bg-[#0b545c] 
+                        hover:text-white font-bold hover:border-2 hover:border-white">OK</button
+                    </form>
+
+                </div>
+                <div class="text-white lg:text-sm pt-2 mb-2 w-52">
+                    <h2 class="mb-3 lg:text-sm font-semibold uppercase">Location</h2>
+                    <p>AgriTech inovation Hub<br>Knezica bb, Kozarska Dubica <br>Republic of Srpska, Bosnia and Herzegovina</p>
+                </div>
+            </div>
+            </div>
+            <div class="sm:col-start-2 text-white">
+                <p class="text-xs text-align-justify">Copyright &copy; INCED 2022</p>
+            </div>
+        
+            </div>
+        </footer>
+  
+
+        </div>
+        {% block script %} {% endblock %}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.3/flowbite.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/tw-elements/dist/js/index.min.js"></script>
+        <script src="{{ url_for('static', path='js/app.js') }}"></script>
+       
+    </body>
+</html>

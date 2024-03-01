@@ -1,0 +1,243 @@
+<nav class="flex flex-row-reverse m-2 p-2">
+  <div class="flex items-center md:order-2">
+    <button
+      type="button"
+      class="flex mr-2 text-sm bg-gray-800 rounded-full md:mr-4 focus:ring-4 focus:ring-gray-300"
+      id="user-menu-button"
+      aria-expanded="false"
+      data-dropdown-toggle="user-dropdown"
+      data-dropdown-placement="bottom"
+    >
+      <span class="sr-only">Open user menu</span>
+      <img
+        class="w-10 h-10 rounded-full"
+        src="/static/images/agritech-logo.png"
+        alt=""
+      />
+    </button>
+    <!-- Dropdown menu -->
+    <div
+      class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow"
+      id="user-dropdown"
+    >
+      <div class="px-4 py-3">
+        <span class="block text-sm text-gray-900"
+          >{{current_user.name}} {{current_user.surname}}</span
+        >
+        <span class="block text-sm font-medium text-gray-500 truncate"
+          >{{ current_user.email }}</span
+        >
+      </div>
+      <ul class="py-2" aria-labelledby="user-menu-button">
+        <li>
+          <a
+            href="/profile"
+            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+            >Profile</a
+          >
+        </li>
+        <li>
+          <a
+            href="/"
+            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+            >Logout</a
+          >
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="flex items-center md:order-2">
+    {% if current_user.admin %}
+    <button
+      type="button"
+      id="alerts-menu-button"
+      aria-expanded="false"
+      data-dropdown-toggle="alerts-dropdown"
+      data-dropdown-placement="bottom"
+      class="relative inline-flex items-center p-2 m-2 text-sm font-medium text-center text-white bg-[#0b545c] rounded-lg hover:bg-emerald-600 focus:ring-4 focus:outline-none focus:ring-blue-300"
+    >
+      <svg
+        class="w-6 h-6"
+        aria-hidden="true"
+        fill="currentColor"
+        viewBox="0 0 20 20"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"
+        ></path>
+        <path
+          d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"
+        ></path>
+      </svg>
+      <span class="sr-only">Notifications</span>
+    </button>
+    {% else %}
+
+    <button
+      type="button"
+      id="alerts-menu-button"
+      aria-expanded="false"
+      data-dropdown-toggle="alerts-dropdown"
+      data-dropdown-placement="bottom"
+      class="relative inline-flex items-center p-2 m-2 text-sm font-medium text-center text-white bg-[#0b545c] rounded-full hover:bg-emerald-600 focus:ring-4 focus:outline-none focus:ring-blue-300"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        class="w-6 h-6"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M5.25 9a6.75 6.75 0 0113.5 0v.75c0 2.123.8 4.057 2.118 5.52a.75.75 0 01-.297 1.206c-1.544.57-3.16.99-4.831 1.243a3.75 3.75 0 11-7.48 0 24.585 24.585 0 01-4.831-1.244.75.75 0 01-.298-1.205A8.217 8.217 0 005.25 9.75V9zm4.502 8.9a2.25 2.25 0 104.496 0 25.057 25.057 0 01-4.496 0z"
+          clip-rule="evenodd"
+        />
+      </svg>
+
+      <span class="sr-only">Notifications</span>
+      {% if alerts | length == 0 %}
+      <div
+        class="absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-blue-500 border-2 border-white rounded-full -top-2 -right-2"
+      >
+        {{ alerts | length }}
+      </div>
+      {% else %}
+      <div
+        class="absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-2 -right-2"
+      >
+        {{ alerts | length }}
+      </div>
+
+      {% endif %}
+    </button>
+    {% endif %}
+
+    <!-- Dropdown menu -->
+    <div
+      class="z-50 hidden my-2 w-96 h-auto text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow"
+      id="alerts-dropdown"
+    >
+      {% if current_user.admin %}
+      <div class="px-6 py-6 lg:px-8">
+        <h3 class="mb-4 text-xl font-medium text-gray-900">
+          Send alert to users!
+        </h3>
+        <form class="space-y-6">
+          <div>
+            <label
+              for="user-alert"
+              class="block mb-2 text-sm font-medium text-gray-900"
+              >Select user:</label
+            >
+            <select
+              id="user-alert"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+            >
+              {% for user in users %}
+              <option value="{{user.username}}">
+                {{user.name}} {{user.surname}}
+              </option>
+              {% endfor %}
+            </select>
+          </div>
+          <div>
+            <label
+              for="message"
+              class="block mb-2 text-sm font-medium text-gray-900"
+              >Create message:</label
+            >
+            <input
+              type="text"
+              id="alert-message"
+              placeholder="Message...."
+              class="peer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+            />
+          </div>
+          <button
+            type="button"
+            onclick="sendAlert()"
+            class="w-full text-white bg-[#0b545c] hover:bg-emerald-600 focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+          >
+            Send Alert
+          </button>
+        </form>
+      </div>
+      {% else %}
+      <div class="relative overflow-x-auto">
+        <table class="w-full text-sm text-left text-gray-50">
+          <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+            <tr>
+              <th scope="col" class="px-6 py-3">Messages</th>
+              <th scope="col" class="px-6 py-3">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for alert in current_user.alerts %} {% if not alert.read %}
+            <td class="p-2 m-2 grow text-red-500">{{alert.message}}</td>
+            <td class="items-justify">
+              <button
+                type="button"
+                onclick="hideAlert({{alert.id}})"
+                class="w-full h-auto text-sm text-center text-white bg-[#0b545c] rounded-lg hover:bg-emerald-600"
+              >
+                Hide
+              </button>
+              {% endif %}
+            </td>
+          </tbody>
+          {% endfor %}
+        </table>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</nav>
+
+{% block script %}
+<script>
+  function hideAlert(id) {
+    const data = {};
+    data["read"] = true;
+
+    fetch("/base/alert/" + id, {
+      method: "PUT",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        let _message = document.querySelector("#message");
+        _message.innerHTML = data.detail;
+
+        setTimeout(location.reload(), 3000);
+      });
+  }
+  function sendAlert() {
+    const data = {};
+    data["user"] = document.getElementById("user-alert").value;
+    data["message"] = document.getElementById("alert-message").value;
+
+    fetch("/base/alert", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        let _message = document.querySelector("#message");
+        _message.innerHTML = data.detail;
+
+        setTimeout(location.reload(), 3000);
+      });
+  }
+</script>
+{% endblock %}

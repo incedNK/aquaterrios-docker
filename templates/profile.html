@@ -1,0 +1,757 @@
+{% extends "components/base.html" %}
+
+
+{% block navbar %}
+{% include "components/navbar.html"%}
+{% endblock %} 
+
+{% block sidebar %}
+{% if current_user.admin: %}
+{% include "components/adminbar.html"%}
+{% endif %}
+{% endblock %}
+
+   
+{% block content %}
+     
+     <div class="p-3 text-center">
+        {% if current_user.delisted: %}
+        <h1 class="text-2xl font-bold tracking-wide text-center m-3 p-3">Thank you for registering on AgriTech web app.</h1>
+        <p class="text-md tracking-wide text-center p-4">Your account is not active yet, so please wait for our administrators to process your request.</p>
+        <p class="text-md tracking-wide text-center p-4">If you are urgently need activation, please contact us directly.</p>
+        {% endif %}
+   
+        {% if current_user.admin: %}
+        <ul class="flex flex-wrap text-sm font-medium text-center hover:cursor-pointer" data-tabs-toggle="#usersTable">
+            <li class="mr-2">
+                <a data-tabs-target="#active-users" role="tab" class="inline-block px-4 py-3 text-gray-900 rounded-lg">All users</a>
+            </li>
+            <li class="mr-2">
+                <a data-tabs-target="#inactive-users" role="tab"  class="inline-block px-4 py-3 text-gray-900 rounded-lg">Inactive Users</a>
+            </li>
+        </ul>
+        <div id="usersTable">
+            <table class="w-full text-sm text-left text-gray-500" id="active-users">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                <tr>
+                    <th scope="col" class="px-6 py-3">
+                        User data
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Subscription status
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Status
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Action
+                    </th>
+                </tr>
+            </thead>
+            {% for user in users %}
+            <tbody>
+                <tr class="bg-white border-b hover:bg-gray-50" >
+                    {% if not user.delisted %}
+                    <th scope="row" class="flex items-center px-3 py-2 text-gray-900 whitespace-nowrap">
+                        <img class="w-10 h-10 rounded-full" src="" alt="">
+                        <div class="pl-3 md:pl-8">
+                            <div class="text-base font-semibold">{{ user.name }} {{ user.surname}}</div>
+                            <div class="font-normal text-gray-500"><a href="#">{{ user.email }}</a></div>
+                            <div class="font-normal text-gray-500">{{ user.address }}</div>
+                        </div>  
+                    </th>
+                    <td class="px-3 py-2 uppercase font-semibold text-xs">
+                        {% if user.premium: %}
+                        Premium user
+                        {% else %}
+                        Basic users
+                        {% endif %}
+                    </td>
+                    <td class="px-3 py-2">
+                        <div class="flex items-center">
+                            {% if user.delisted: %}
+                            <div class="h-2.5 w-2.5 rounded-full bg-red-500 mr-2"></div> Inactive
+                            {% else %}
+                            <div class="h-2.5 w-2.5 rounded-full bg-green-500 mr-2"></div> Active
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td class="px-3 py-2">
+                        <a data-modal-target="edit-user-modal-{{user.username}}" data-modal-toggle="edit-user-modal-{{user.username}}"  
+                        class="font-medium text-blue-600 hover:underline hover:cursor-pointer">Edit</a>
+                        <span>/<span>
+                        <a data-modal-target="delete{{user.username}}" data-modal-toggle="delete{{user.username}}" 
+                        class="font-medium text-red-600 hover:underline hover:cursor-pointer">Delete</a>
+                    </td>
+                </tr>
+                {% endif %}
+                </tr>
+                <!-- Main update modal -->
+                <div id="edit-user-modal-{{user.username}}" tabindex="-1" aria-hidden="false" 
+                    class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-modal md:h-full">
+                <div class="relative w-full h-full max-w-lg md:h-auto">
+                <!-- Modal content -->
+                <div class="relative bg-white rounded-lg shadow">
+                    <button type="button" 
+                        class="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" 
+                        data-modal-hide="edit-user-modal-{{user.username}}">
+                        <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                        <span class="sr-only">Close modal</span>
+                    </button>
+                    <div class="px-6 py-6 lg:px-8">
+                        <h3 class="mb-4 text-xl font-medium text-gray-900">Change user's {{user.username}}atributes:</h3>
+                        <form class="space-y-6">
+            
+                            <h3 class="mb-4 text-md text-gray-900">Change status:</h3>    
+                            <div class="flex items-center pl-4 border border-gray-200 rounded">
+                                <input  type="radio" value="true" name="delisted" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 focus:ring-2">
+                                <label  class="w-full py-4 ml-2 text-sm text-gray-900">Deactivate user</label>
+                            </div>
+                            <div class="flex items-center pl-4 border border-gray-200 rounded dark:border-gray-700">
+                                <input  type="radio" value="false" name="delisted" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 focus:ring-2">
+                                <label  class="w-full py-4 ml-2 text-sm text-gray-900">Activate user</label>
+                            </div>
+                            <h3 class="mb-4 text-md text-gray-900">Change subscription:</h3>    
+                            <div class="flex items-center pl-4 border border-gray-200 rounded">
+                                <input  type="radio" value="false" name="premium" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 focus:ring-2">
+                                <label  class="w-full py-4 ml-2 text-sm text-gray-900">Basic user</label>
+                            </div>
+                            <div class="flex items-center pl-4 border border-gray-200 rounded dark:border-gray-700">
+                                <input  type="radio" value="true" name="premium" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 focus:ring-2">
+                                <label class="w-full py-4 ml-2 text-sm text-gray-900">Premium user</label>
+                            </div>
+                            <h3 class="mb-4 text-md text-gray-900">Change privilages:</h3>    
+                            <div class="flex items-center pl-4 border border-gray-200 rounded">
+                                <input  type="radio" value="false" name="admin" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 focus:ring-2">
+                                <label  class="w-full py-4 ml-2 text-sm text-gray-900">Regular user</label>
+                            </div>
+                            <div class="flex items-center pl-4 border border-gray-200 rounded dark:border-gray-700">
+                                <input  type="radio" value="true" name="admin" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 focus:ring-2">
+                                <label  class="w-full py-4 ml-2 text-sm text-gray-900">Administrator</label>
+                            </div>
+                            <button data-modal-hide="edit-user-modal-{{user.username}}" onclick=adminUpdate("{{user.username}}")
+                                 class="w-full text-white bg-[#0b545c] hover:bg-emerald-600 focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
+                                Update account
+                            </button>
+        
+                        </form>
+                    </div>
+                    
+                </div>
+            </div>
+            </div> 
+            <!-- Main delete modal -->  
+                <div id="delete{{user.username}}" tabindex="-1" class="fixed top-0 left-0 right-0 z-50 hidden p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] md:h-full">
+                    <div class="relative w-full h-full max-w-md md:h-auto">
+                    <div class="relative bg-white rounded-lg shadow">
+                    <button type="button" class="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" data-modal-hide="delete{{user.username}}">
+                  <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                  <span class="sr-only">Close modal</span>
+                    </button>
+              <div class="p-6 text-center">
+                  <svg aria-hidden="true" class="mx-auto mb-4 text-gray-400 w-14 h-14" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                  <h3 class="mb-5 text-lg font-normal text-gray-500">Are you sure you want to delete {{user.name}} ?</h3>
+                  <button data-modal-hide="delete{{user.username}}" type="button" onclick=deleteRequest("{{user.username}}")
+                  class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center mr-2">
+                      Yes, I'm sure
+                  </button>
+                  <button data-modal-hide="delete{{user.username}}" type="button" 
+                  class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10">No, cancel</button>
+              </div>
+                </div>
+                </div>
+            </div>
+            </tbody>
+            {% endfor %}
+            </table>
+            <table class="w-full text-sm text-left text-gray-500" id="inactive-users">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                <tr>
+                    <th scope="col" class="px-6 py-3">
+                        User data
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Subscription status
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Status
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Action
+                    </th>
+                </tr>
+            </thead>
+            {% for user in users %}
+            <tbody>
+                <tr class="bg-white border-b hover:bg-gray-50" >
+                    {% if user.delisted %}
+                    <th scope="row" class="flex items-center px-3 py-2 text-gray-900 whitespace-nowrap">
+                        <img class="w-10 h-10 rounded-full" src="" alt="">
+                        <div class="pl-3 md:pl-8">
+                            <div class="text-base font-semibold">{{ user.name }} {{ user.surname}}</div>
+                            <div class="font-normal text-gray-500"><a href="#">{{ user.email }}</a></div>
+                            <div class="font-normal text-gray-500">{{ user.address }}</div>
+                        </div>  
+                    </th>
+                    <td class="px-3 py-2 uppercase font-semibold text-xs">
+                        {% if user.premium: %}
+                        Premium user
+                        {% else %}
+                        Basic users
+                        {% endif %}
+                    </td>
+                    <td class="px-3 py-2">
+                        <div class="flex items-center">
+                            {% if user.delisted: %}
+                            <div class="h-2.5 w-2.5 rounded-full bg-red-500 mr-2"></div> Inactive
+                            {% else %}
+                            <div class="h-2.5 w-2.5 rounded-full bg-green-500 mr-2"></div> Active
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td class="px-3 py-2">
+                        <a data-modal-target="edit-user-modal-{{user.username}}" data-modal-toggle="edit-user-modal-{{user.username}}"  
+                        class="font-medium text-blue-600 hover:underline hover:cursor-pointer">Edit</a>
+                        <span>/<span>
+                        <a data-modal-target="delete{{user.username}}" data-modal-toggle="delete{{user.username}}" 
+                        class="font-medium text-red-600 hover:underline hover:cursor-pointer">Delete</a>
+                    </td>
+                </tr>
+                {% endif %}
+                </tr>
+                <!-- Main update modal -->
+                <div id="edit-user-modal-{{user.username}}" tabindex="-1" aria-hidden="false" 
+                    class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-modal md:h-full">
+                <div class="relative w-full h-full max-w-lg md:h-auto">
+                <!-- Modal content -->
+                <div class="relative bg-white rounded-lg shadow">
+                    <button type="button" 
+                        class="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" 
+                        data-modal-hide="edit-user-modal-{{user.username}}">
+                        <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                        <span class="sr-only">Close modal</span>
+                    </button>
+                    <div class="px-6 py-6 lg:px-8">
+                        <h3 class="mb-4 text-xl font-medium text-gray-900">Change user's {{user.username}} atributes:</h3>
+                        <form class="space-y-6">
+                            {% if not user.delisted %}
+                            <h3 class="mb-4 text-md text-gray-900">Change status:</h3>    
+                            <div class="flex items-center pl-4 border border-gray-200 rounded">
+                                <input  type="radio" value="true" name="delisted" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 focus:ring-2">
+                                <label  class="w-full py-4 ml-2 text-sm text-gray-900">Deactivate user</label>
+                            </div>
+                            {% endif %}
+                            {% if user.premium %}
+                            <h3 class="mb-4 text-md text-gray-900">Change subscription:</h3>    
+                            <div class="flex items-center pl-4 border border-gray-200 rounded">
+                                <input  type="radio" value="false" name="premium" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 focus:ring-2">
+                                <label  class="w-full py-4 ml-2 text-sm text-gray-900">Basic user</label>
+                            </div>
+                            {% endif %}
+                            {% if user.admin %}
+                            <h3 class="mb-4 text-md text-gray-900">Change privilages:</h3>    
+                            <div class="flex items-center pl-4 border border-gray-200 rounded">
+                                <input  type="radio" value="false" name="admin" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 focus:ring-2">
+                                <label  class="w-full py-4 ml-2 text-sm text-gray-900">Regular user</label>
+                            </div>
+                            {% endif %}
+                            {% if user.delisted %}
+                            <h3 class="mb-4 text-md text-gray-900">Change status:</h3>  
+                            <div class="flex items-center pl-4 border border-gray-200 rounded dark:border-gray-700">
+                                <input  type="radio" value="false" name="delisted" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 focus:ring-2">
+                                <label  class="w-full py-4 ml-2 text-sm text-gray-900">Activate user</label>
+                            </div>
+                            {% endif %}
+                            {% if not user.premium %}
+                            <h3 class="mb-4 text-md text-gray-900">Change subscription:</h3>    
+                            <div class="flex items-center pl-4 border border-gray-200 rounded dark:border-gray-700">
+                                <input  type="radio" value="true" name="premium" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 focus:ring-2">
+                                <label class="w-full py-4 ml-2 text-sm text-gray-900">Premium user</label>
+                            </div>
+                            {% endif %}
+                            {% if not user.admin %}
+                            <h3 class="mb-4 text-md text-gray-900">Change privilages:</h3>    
+                            <div class="flex items-center pl-4 border border-gray-200 rounded dark:border-gray-700">
+                                <input  type="radio" value="true" name="admin" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 focus:ring-2">
+                                <label  class="w-full py-4 ml-2 text-sm text-gray-900">Administrator</label>
+                            </div>
+                            {% endif %}
+                            <button data-modal-hide="edit-user-modal-{{user.username}}" onclick=adminUpdate("{{user.username}}")
+                                 class="w-full text-white bg-[#0b545c] hover:bg-emerald-600 focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
+                                Update account
+                            </button>
+        
+                        </form>
+                    </div>
+                    
+                </div>
+            </div>
+            </div> 
+            <!-- Main delete modal -->  
+        <div id="delete{{user.username}}" tabindex="-1" class="fixed top-0 left-0 right-0 z-50 hidden p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] md:h-full">
+                <div class="relative w-full h-full max-w-md md:h-auto">
+          <div class="relative bg-white rounded-lg shadow">
+              <button type="button" class="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" data-modal-hide="delete{{user.username}}">
+                  <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                  <span class="sr-only">Close modal</span>
+              </button>
+              <div class="p-6 text-center">
+                  <svg aria-hidden="true" class="mx-auto mb-4 text-gray-400 w-14 h-14" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                  <h3 class="mb-5 text-lg font-normal text-gray-500">Are you sure you want to delete {{user.name}} ?</h3>
+                  <button data-modal-hide="delete{{user.username}}" type="button" onclick=deleteRequest("{{user.username}}")
+                  class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center mr-2">
+                      Yes, I'm sure
+                  </button>
+                  <button data-modal-hide="delete{{user.username}}" type="button" 
+                  class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10">No, cancel</button>
+              </div>
+          </div>
+                </div>
+            </div>
+            </tbody>
+            {% endfor %}
+            </table>
+        </div>
+    <div class="flex flex-nowrap">
+        <button data-modal-target="signup-modal" data-modal-toggle="signup-modal" 
+            class="block text-white bg-[#0b545c] hover:bg-green-600 rounded-full text-2xl font-bold px-3 py-1 text-center mr-3"
+            type="button">
+            <strong>+</strong>
+        </button>
+        <a data-modal-target="change-password-modal" data-modal-toggle="change-password-modal" 
+            class="font-medium text-[#0b545c] hover:bg-green-60 hover:underline hover:cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-10 h-10">
+                <path fill-rule="evenodd" d="M11.078 2.25c-.917 0-1.699.663-1.85 1.567L9.05 4.889c-.02.12-.115.26-.297.348a7.493 7.493 0 00-.986.57c-.166.115-.334.126-.45.083L6.3 5.508a1.875 1.875 0 00-2.282.819l-.922 1.597a1.875 1.875 0 00.432 2.385l.84.692c.095.078.17.229.154.43a7.598 7.598 0 000 1.139c.015.2-.059.352-.153.43l-.841.692a1.875 1.875 0 00-.432 2.385l.922 1.597a1.875 1.875 0 002.282.818l1.019-.382c.115-.043.283-.031.45.082.312.214.641.405.985.57.182.088.277.228.297.35l.178 1.071c.151.904.933 1.567 1.85 1.567h1.844c.916 0 1.699-.663 1.85-1.567l.178-1.072c.02-.12.114-.26.297-.349.344-.165.673-.356.985-.57.167-.114.335-.125.45-.082l1.02.382a1.875 1.875 0 002.28-.819l.923-1.597a1.875 1.875 0 00-.432-2.385l-.84-.692c-.095-.078-.17-.229-.154-.43a7.614 7.614 0 000-1.139c-.016-.2.059-.352.153-.43l.84-.692c.708-.582.891-1.59.433-2.385l-.922-1.597a1.875 1.875 0 00-2.282-.818l-1.02.382c-.114.043-.282.031-.449-.083a7.49 7.49 0 00-.985-.57c-.183-.087-.277-.227-.297-.348l-.179-1.072a1.875 1.875 0 00-1.85-1.567h-1.843zM12 15.75a3.75 3.75 0 100-7.5 3.75 3.75 0 000 7.5z" clip-rule="evenodd" />
+            </svg>     
+        </a>
+    </div>
+        <!-- Main modal -->
+        <div id="change-password-modal" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] md:h-full">
+            <div class="relative w-full h-full max-w-md md:h-auto">
+          <!-- Modal content -->
+          <div class="relative bg-white rounded-lg shadow">
+              <button type="button" class="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" data-modal-hide="change-password-modal">
+                  <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                  <span class="sr-only">Close modal</span>
+              </button>
+              <div class="px-6 py-6 lg:px-8">
+                  <h3 class="mb-4 text-xl font-medium text-gray-900">Change your password</h3>
+                  <div id="query-message" class="p-4 text-md text-amber-500 text-center rounded-lg" role="alert"></div>
+                  <form class="space-y-6">
+                      <div>
+                          <label for="new-password" class="block mb-2 text-sm font-medium text-gray-900">Your new password</label>
+                          <input type="password" id="new-password" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                      </div>
+                      <div>
+                        <label for="retype-password" class="block mb-2 text-sm font-medium text-gray-900">Retype your password</label>
+                        <input type="password" id="retype-password" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                      </div>
+                      <button type="button" 
+                        onclick=changePassword("{{current_user.username}}")
+                        class="w-full text-white bg-[#0b545c] hover:bg-emerald-600 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Change</button>
+                  </form>
+              </div>
+          </div>
+            </div>
+        </div>
+        <!-- Main modal -->
+        <div id="signup-modal" tabindex="-1" aria-hidden="false" 
+                class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-modal md:h-full">
+            <div class="relative w-full h-full max-w-lg md:h-auto">
+        <!-- Modal content -->
+        <div class="relative bg-white rounded-lg shadow">
+                <button type="button" 
+                    class="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" 
+                    data-modal-hide="signup-modal">
+                    <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                    <span class="sr-only">Close modal</span>
+                </button>
+            <div class="px-6 py-6 lg:px-8">
+                <h3 class="mb-4 text-xl font-medium text-gray-900">Create new account:</h3>
+                <form id="signUpForm" class="space-y-6" action="/register">
+                    <div class="inline-block">
+                        <label for="username1" class="block mb-2 text-sm font-medium text-gray-900">Username</label>
+                        <input type="text" name="username" id="username1" 
+                          class="peer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2" 
+                          placeholder="username" required>
+                          <p class="invisible peer-invalid:visible text-xs text-red-700 font-light">
+                            Please enter username
+                        </p>
+                    </div>
+                    <div class="inline-block mx-4">
+                        <label for="password1" class="block mb-2 text-sm font-medium text-gray-900">Password</label>
+                        <input type="password" name="password" id="password1" placeholder="••••••••" 
+                          class="peer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2" required>
+                          <p class="invisible peer-invalid:visible text-xs text-red-700 font-light">
+                            Please enter password
+                        </p>
+                    </div>
+                    <div class="inline-block">
+                        <label for="email" class="block mb-2 text-sm font-medium text-gray-900">Email</label>
+                        <input type="email" name="email" id="email" 
+                          class="peer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-auto p-2" 
+                          placeholder="mail@example.com" required>
+                          <p class="invisible peer-invalid:visible text-xs text-red-700 font-light">
+                            Please enter email
+                        </p>
+                    </div>
+                    <div class="inline-block mx-6">
+                        <label for="name" class="block mb-2 text-sm font-medium text-gray-900">First name</label>
+                        <input type="text" name="name" id="name" placeholder="First name" 
+                          class="peer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-auto p-2" required>
+                          <p class="invisible peer-invalid:visible text-xs text-red-700 font-light">
+                            Please enter first name
+                        </p>
+                    </div>
+                    <div class="inline-block">
+                        <label for="surname" class="block mb-2 text-sm font-medium text-gray-900">Lastname</label>
+                        <input type="text" name="surname" id="surname" 
+                          class="peer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-auto p-2" 
+                          placeholder="Last name" required>
+                          <p class="invisible peer-invalid:visible text-xs text-red-700 font-light">
+                            Please enter lastname
+                        </p>
+                    </div>
+                    <div class="inline-block mx-4">
+                        <label for="address" class="block mb-2 text-sm font-medium text-gray-900">Address</label>
+                        <input type="text" name="address" id="address" placeholder="Address" 
+                          class="peer bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-auto p-2" required>
+                          <p class="invisible peer-invalid:visible text-xs text-red-700 font-light">
+                            Please enter address
+                        </p>
+                    </div>
+                    <button type="submit" id="signUpBtn" data-modal-hide="signup-modal"
+                      class="w-full text-white bg-[#0b545c] hover:bg-emerald-600 focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
+                      Create account
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    </div> 
+
+        {% endif %} 
+
+        {% if not current_user.admin and not current_user.delisted: %}
+        <div class="mx-auto mb-16">
+            <figure class="h-96 w-full">
+                <img class="h-full w-full rounded-lg mb-4" src="/static/images/irrigation.jpg" alt="irrigation">
+                <figcaption class="mt-4 text-xl text-center text-gray-500"><strong>Wellcome to Aquaterrios WebApp!</strong></figcaption>
+              </figure>
+        </div>
+        <div class="pl-4 text-justify md:text-center">
+            <h2 class="mb-4 text-xl">Wellcome to user profile page</h2>
+            <p class="">Hello {{current_user.name}}, wellcome to profile page.<p>
+            <p>On this page you can edit user's default attributes and view data from integrated systems.</p> 
+            <h2>General user data</h2>
+            
+            <div class="relative overflow-x-auto mx-auto max-w-xl">
+            <table class="w-full text-sm text-left text-gray-500">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                    <tr>
+                <th scope="col" class="px-6 py-3">
+                    Category
+                </th>
+                <th scope="col" class="px-6 py-3">
+                   Data
+                </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="bg-white border-b">
+                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                    Username
+                </th>
+                <td class="px-6 py-4">
+                    {{current_user.username}}
+                </td>
+                    </tr>
+                    <tr class="bg-white border-b">
+                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                    Email
+                </th>
+                <td class="px-6 py-4">
+                    {{current_user.email}}
+                </td>
+                    </tr>
+                    <tr class="bg-white border-b">
+                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                    First name
+                </th>
+                <td class="px-6 py-4">
+                    {{current_user.name}}
+                </td>
+                    </tr>
+                    <tr class="bg-white border-b">
+                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                    Last name
+                </th>
+                <td class="px-6 py-4">
+                    {{current_user.surname}}
+                </td>
+                    </tr>
+                    <tr class="bg-white border-b">
+                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                    Address
+                </th>
+                <td class="px-6 py-4">
+                    {{current_user.address}}
+                </td>
+                    </tr>
+                    <tr class="bg-white border-b">
+                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                    Registration date
+                </th>
+                <td class="px-6 py-4">
+                    {{current_user.created_at.strftime("%d-%m-%Y, %H:%M")}}
+                </td>
+                    </tr>
+                    <tr class="bg-white border-b">
+                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                    Subscription
+                </th>
+                <td class="px-3 py-2 uppercase font-semibold text-xs">
+                    {% if current_user.premium: %}
+                    Premium user
+                    {% else %}
+                    Basic user
+                    {% endif %}
+                </td>
+                    </tr>
+                </tbody>
+            </table>
+            </div>
+            <div class="mt-4">
+            <a data-modal-target="edit-user-modal" data-modal-toggle="edit-user-modal"  
+            class="font-medium text-blue-600 hover:underline hover:cursor-pointer">Change settings</a>
+                <span>/<span>
+            <a data-modal-target="change-password-modal" data-modal-toggle="change-password-modal" 
+            class="font-medium text-red-600 hover:underline hover:cursor-pointer">Change password</a>
+            </div>
+  
+        <!-- Main modal -->
+        <div id="edit-user-modal" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] md:h-full">
+            <div class="relative w-full h-full max-w-md md:h-auto">
+          <!-- Modal content -->
+          <div class="relative bg-white rounded-lg shadow">
+              <button type="button" class="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" data-modal-hide="edit-user-modal">
+                  <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                  <span class="sr-only">Close modal</span>
+              </button>
+              <div class="px-6 py-6 lg:px-8">
+                  <h3 class="mb-4 text-xl font-medium text-gray-900">Edit your account</h3>
+                  <form class="space-y-6">
+                      <div>
+                          <label for="email" class="block mb-2 text-sm font-medium text-gray-900">Your email</label>
+                          <input type="email" id="current-user-email" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" 
+                                placeholder="{{current_user.email}}">
+                      </div>
+                      <div>
+                        <label for="name" class="block mb-2 text-sm font-medium text-gray-900">Your first name</label>
+                        <input type="text" id="current-user-name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" 
+                              placeholder="{{current_user.name}}">
+                      </div>
+                      <div>
+                        <label for="surname" class="block mb-2 text-sm font-medium text-gray-900">Your last name</label>
+                        <input type="text" id="current-user-surname" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" 
+                              placeholder="{{current_user.surname}}">
+                      </div>
+                      <div>
+                        <label for="address" class="block mb-2 text-sm font-medium text-gray-900">Your address</label>
+                        <input type="text" id="current-user-address" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" 
+                              placeholder="{{current_user.address}}">
+                      </div>
+                      <button type="button" 
+                        onclick=updateUserData("{{current_user.username}}")
+                        data-modal-hide="edit-user-modal"
+                        class="w-full text-white bg-[#0b545c] hover:bg-emerald-600 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Change</button>
+                  </form>
+              </div>
+          </div>
+            </div>
+        </div> 
+        <!-- Main modal -->
+        <div id="change-password-modal" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] md:h-full">
+            <div class="relative w-full h-full max-w-md md:h-auto">
+          <!-- Modal content -->
+          <div class="relative bg-white rounded-lg shadow">
+              <button type="button" class="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" data-modal-hide="change-password-modal">
+                  <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                  <span class="sr-only">Close modal</span>
+              </button>
+              <div class="px-6 py-6 lg:px-8">
+                  <h3 class="mb-4 text-xl font-medium text-gray-900">Change your password</h3>
+                  <div id="query-message" class="p-4 text-md text-amber-500 text-center rounded-lg" role="alert"></div>
+                  <form class="space-y-6">
+                      <div>
+                          <label for="new-password" class="block mb-2 text-sm font-medium text-gray-900">Your new password</label>
+                          <input type="password" id="new-password" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                      </div>
+                      <div>
+                        <label for="retype-password" class="block mb-2 text-sm font-medium text-gray-900">Retype your password</label>
+                        <input type="password" id="retype-password" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                      </div>
+                      <button type="button" 
+                        onclick=changePassword("{{current_user.username}}")
+                        class="w-full text-white bg-[#0b545c] hover:bg-emerald-600 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Change</button>
+                  </form>
+              </div>
+          </div>
+            </div>
+        </div> 
+  
+        </div> 
+        <div class="mx-auto mt-4">  
+        <h1 class="mb-4 text-xl text-[#0b545c] uppercase font-bold">User systems:</h1>
+        {% if not current_user.systems %}
+        <div class="mx-auto">
+            <p class="m-4">You currently owe no system. Once system is installed will appear in this part of page.</p>
+        </div>
+        {% else %}
+        
+        <div class="flex flex-col md:flex-row md:flex-wrap justify-center mb-8 border border-gray-200 rounded-lg shadow-sm">
+            {% for system in current_user.systems %}</br>
+            <div class="max-w-md ml-6 p-6 bg-white border border-gray-200 rounded-lg shadow">
+                <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900">Here you can check details on <span class="text-[#0b545c]">{{system.name}}</span></h5>
+                <p class="mb-3 font-normal text-gray-700">System's location:  <strong class="text-[#0b545c]">{{system.location}}</strong></p>
+                <p class="mb-3 font-normal text-gray-700">System's pumps:  <strong class="text-[#0b545c]">{{ system.system_pumps | length }}</strong></p>
+                <p class="mb-3 font-normal text-gray-700">System's valves:  <strong class="text-[#0b545c]">{{ system.system_valves | length }}</strong></p>
+                <p class="mb-3 font-normal text-gray-700">System's sensors:  <strong class="text-[#0b545c]">{{ system.system_sensors | length }}</strong></p>
+                <div class="flex justify-around">
+                    <a data-modal-target="edit-system-modal-{{system.id}}" data-modal-toggle="edit-system-modal-{{system.id}}" 
+                    class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-[#0b545c] hover:bg-emerald-600 rounded-lg focus:ring-4 focus:outline-none focus:ring-blue-300">
+                        Edit System
+                        <svg aria-hidden="true" class="w-4 h-4 ml-2 -mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                    </a>
+                    <a href="/system/{{system.id}}" class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300">
+                        More details
+                        <svg aria-hidden="true" class="w-4 h-4 ml-2 -mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                    </a>
+               </div>
+               <!-- Main modal -->
+                <div id="edit-system-modal-{{system.id}}" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] md:h-full">
+                    <div class="relative w-full h-full max-w-md md:h-auto">
+                <!-- Modal content -->
+                <div class="relative bg-white rounded-lg shadow">
+                    <button type="button" class="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" 
+                        data-modal-hide="edit-system-modal-{{system.id}}">
+                        <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                        <span class="sr-only">Close modal</span>
+                    </button>
+                    <div class="px-6 py-6 lg:px-8">
+                        <h3 class="mb-4 text-xl font-medium text-gray-900">Change system's data here.</h3>
+                        <div id="query-message" class="p-4 text-md text-amber-500 text-center rounded-lg" role="alert"></div>
+                        <form class="space-y-6">
+                        <div>
+                            <label for="name" class="block mb-2 text-sm font-medium text-gray-900">Change system name</label>
+                            <input type="text" id="name{{system.id}}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                        </div>
+                        <div>
+                            <label for="location" class="block mb-2 text-sm font-medium text-gray-900">Change system location</label>
+                            <input type="text" id="location{{system.id}}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                        </div>
+                        <button type="button" 
+                            onclick=changeSystemData("{{system.id}}")
+                            data-modal-hide="edit-system-modal-{{system.id}}"
+                            class="w-full text-white bg-[#0b545c] hover:bg-emerald-600 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Change</button>
+                        </form>
+                    </div>
+                </div>
+                </div>
+        </div> 
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        </div>
+        {% endif %}
+
+
+     </div>
+
+{% endblock %}
+
+{% block script %}
+<script>
+    function updateUserData(id) {
+        const data = {};
+        data["email"] = document.getElementById("current-user-email").value;
+        data["name"] = document.getElementById("current-user-name").value;
+        data["surname"] = document.getElementById("current-user-surname").value;
+        data["address"] = document.getElementById("current-user-address").value;
+    
+        fetch("/base/user/" + id, {
+          method: "PUT",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify(data),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            let _message = document.querySelector("#message");
+            _message.innerHTML = data.detail;
+    
+            setTimeout(location.reload(), 3000);
+          });
+      }
+      function changePassword(id) {
+        const data = {};
+        let password1 = document.getElementById("new-password").value;
+        let password2 = document.getElementById("retype-password").value;
+        let _message = document.querySelector("#query-message");
+        
+        if (password1 !== password2){
+            _message.innerHTML = "Passwords doesn't matches. Please check your entry!";
+
+            setTimeout(location.reload(), 8000);
+        } else {
+            data["password"] = password1;
+            console.log(data)
+
+            fetch("/base/change_password/" + id, {
+                method: "PATCH",
+                credentials: "include",
+                headers: {
+                  "Content-Type": "application/json",
+                  Accept: "application/json",
+                },
+                body: JSON.stringify(data),
+              })
+                .then((response) => response.json())
+                .then((data) => {
+                  _message.innerHTML = data.detail;
+          
+                  setTimeout(location.reload(), 3000);
+                });
+        } 
+      }
+      function changeSystemData(id) {
+        const data = {};
+        let name = document.getElementById("name"+id).value;
+        let location = document.getElementById("location"+id).value;
+        data["name"] = name;
+        data["location"] = location;
+        console.log(data)        
+
+        fetch("/base/system/" + id, {
+            method: "PUT",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+            body: JSON.stringify(data),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              _message.innerHTML = data.detail;
+        
+              setTimeout(location.reload(), 3000);
+            });
+      }
+</script>
+{% endblock %}
+
